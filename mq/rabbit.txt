@@ -1,0 +1,9 @@
+RabbitMQ
+	connection：链接
+	channel :信道
+	exchange：交换机
+		交换机策略
+		direct：发送到指定的rouingKey的队列
+		fanout: 发送到绑定这个交换机的所有队列，不需要rouingKey
+		topic（广播）： 发送到匹配到这个消息的rouingKey的队列，就是每个队列都有其关心的主题(可以是通配符)
+	binding:用于绑定队列和交换机 

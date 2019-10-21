@@ -1,0 +1,63 @@
+Redis
+	一、单线程模型，基于文件事件处理器。
+		客户端请求连接redis服务器，severSocket会发出一个AE_READABLE事件，被IO多路复用程序监听到，把网络事件压入队列。文件事件分派器会从队列消费事件，发派给不同的事件处理器。
+		请求连接处理器处理severSocket发出的AE_READABLE事件，创建一个与客户端通信的socket01，并把socket的AE_READABLE与命令请求处理器绑定。
+		客户端发出命令请求给socket01，socket01发出AE_READABLE事件，被IO多路复用程序监听到，把网络事件压入队列。文件事件分派器会从队列消费事件，发派给命令请求处理器。
+		命令请求处理器读取socket01中的命令，在内存中执行完。将AE_WIRTABLE事件与命令回复处理器绑定
+		socket01发出AE_WIRTABLE事件 
+		命令回复处理器绑定将处理结果发送给socket01，并将AE_WIRTABLE事件与处理器解除绑定。
+	
+	redis的过期策略
+		定期删除
+			定期删除是redis默认每个100ms就会随机抽取一些设置了过期时间的key进行检查是否过期，发现过期就删除					
+		惰性删除
+			惰性删除是redis在客户端获取某个key时，会检查这个key是否有设置过期时间以及是否过期，如已过期，就删除，也不会返回任何东西
+			
+	内存淘汰机制
+		noeviction
+			如果当内存不足以容纳新写入数据时，直接报错
+		allkeys-lru 最常用
+			如果内存不足以容纳新写入数据，从key空间中删除最近最少使用的key
+		
+		allkeys-random
+			内存不足时，随机删除key
+			
+		volatile-lru 不常用
+			内存不足时，删除最近最少使用的设置了过期时间的key
+		
+		volatile-random
+			内存不足时，随机删除设置了过期时间的key
+		valatile-ttl
+			内存不足时，删除更早设置过期时间的key
+	
+	手写LRU算法
+		https://github.com/shishan100/Java-Interview-Advanced/blob/master/docs/high-concurrency/redis-expiration-policies-and-lru.md
+		
+	redis主从架构 水平扩容	
+		redis读写分离
+			master node负责写，slave node负责读。redis缓存主要还是查询功能，一个master可以对应多个salve。支持水平扩容，增加读的吞吐量。master复制数据给slave，
+			master必须开启持久化，不做持久化，master宕机重启，会把空数据同步至salve，导致数据丢失。
+			master 的各种备份方案，也需要做。万一本地的所有文件丢失了，从备份中挑选一份 rdb 去恢复 master，这样才能确保启动的时候，是有数据的
+		redis-replication 主从复制 
+			全量复制
+				slave启动时，从redis.conf获取master的IP，port，建立一个socket链接，slave有个定时检查socket是否有master需要链接。
+				slave会发送PSYNC(run id)
+			增量复制
+				master和slave都会保存一个offerset，master根据offerset增量复制数据，不会生成rdb文件。
+	
+	
+	
+	分布式锁
+		redission实现
+			1、互斥 相互排斥。在任何给定时刻，只有一个客户端可以持有锁。
+			2、不死锁， 最终，即使锁定资源的客户端崩溃或被分区，也始终可以获取锁定。
+			3、容错性，只有redis大部分节点启动，不影响客户端加锁及释放锁
+			https://redis.io/topics/distlock
+			
+			
+			
+		
+
+		
+		
+		

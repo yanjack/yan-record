@@ -1,0 +1,16 @@
+IOC
+	springboot启动
+		https://blog.csdn.net/woshilijiuyi/article/details/82219585
+			AbstractApplicationContext.refresh()
+	
+	FileSystemXmlApplicationContext
+		https://www.jianshu.com/p/e4ca039a2272
+		核心方法
+			AbstractApplicationContext.refresh()
+				构建BeanFactory，以便于产生所需的 Bean
+					AbstractRefreshableApplicationContext.refreshBeanFactory
+						AbstractXmlApplicationContext.loadBeanDefinitions 加载IOC中bean的数据结构
+							AbstractBeanDefinitionReader．loadBeanDefinitions
+								XmlBeanDefinitionReader．loadBeanDefinitions
+									DefaultBeanDefinitionDocumentReader．registerBeanDefinitions　注册bean
+										processBeanDefinition

@@ -1,0 +1,44 @@
+concurrent
+	内存模型 线程内存 主存
+	原子性
+	可见性
+	有序性
+		防止指令重排
+	volatile 保证可见性
+	lock 
+		CAS compare and swap 比较交换
+			实现原理	
+				乐观锁 通过循环不断的比较交换直到成功
+				三个参数(old value,new value,offeset),原值，新值，内存地址，设置成功true 						
+			问题：
+				ABA问题
+					线程1修改某内存，共享内存原值A，线程2改成B后，线程3改回A，线程1也是可以修改成功，但是其实原值事由被修改过的
+				解决
+					每次修改带上版本号
+		AQS AbstractQueuedSynchronizer 
+			结构组成
+				node {tail head prev next  nextWaiter 下个节点的等待状态 组成一个queue}
+			实现原理
+				CAS+queue
+				AQS内部维护一个CLH队列来管理锁。线程会首先尝试获取锁，如果失败，则将当前线程以及等待状态等信息包成一个Node节点加到同步队列里。
+				接着会不断循环尝试获取锁（条件是当前节点为head的直接后继才会尝试）,如果失败则会阻塞自己，直至被唤醒；
+				而当持有锁的线程释放锁时，会唤醒队列中的后继线程。				
+		ReentrantLock 可重入锁
+			独占锁
+			公平锁
+			非公平锁			
+			实现原理 AQS
+			优势
+				相比synchronize,可以自己释放锁资源，不会造成死锁，可以设置锁过期时间。			 			
+		synch
+			1.6后支持偏向锁、轻量锁等
+			monitor
+				
+	concurrentHashMap
+		结构 node结构 table[node,node] 数组+链表+红黑树
+		put同步原理
+			CAS+synchronize
+		get不需要同步
+			volatile修饰node 的value
+		
+		

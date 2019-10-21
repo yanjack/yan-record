@@ -1,0 +1,12 @@
+linux常用命令
+	find -name -d 查找目录
+	mkdir -d 创建目录
+	rz -be 上传文件
+	ls -R 
+	tar -zxvf java.tar.gz  -C /usr/java 解压tar包到指定文件
+	
+	vi 编辑
+	nohup java -jar shareniu.jar >/dev/null  2>&1 &
+	nohup java -jar eureka-server-0.0.1-SNAPSHOT.jar >> ./../logs/eureka.log 2>&1 &
+netstat -nlp |grep :9181 
+ps -ef |grep java 查询所有Java进程

@@ -1,0 +1,35 @@
+﻿架构师峰会资料 https://ppt.geekbang.org/list/assz2019?device=geekTime.android 
+
+cloud 认证 https://blog.csdn.net/w1054993544/article/details/78932614
+
+spring cloud ：https://blog.csdn.net/forezp/article/details/70148833  书籍
+https://github.com/springcloud/spring-cloud-code
+gateway 与eureka 集成 https://www.jianshu.com/p/9f5cc8afdac9
+
+分布式事务 TX-LCN：https://www.txlcn.org/zh-cn/index.html
+
+redis 集群
+
+shrio/cloud security 安全 
+
+中间件 rabbitMQ kafka 
+ 
+springboot 日志记录 https://www.cnblogs.com/zhangjianbing/p/8992897.html https://www.cnblogs.com/30go/p/8443435.html
+
+linux 虚拟化 docker容器
+
+数据库分表分库/读写分离 索引原理 SQL优化 
+
+thinking in java 设计模式
+
+JVM 
+
+数据结构 红黑树
+
+spring https://note.youdao.com/ynoteshare1/index.html?id=91726d9a0d681cb439a0dcd93d42ac14&type=note
+
+2019-08-09 14:07:38,079
+
+grep  '2018-08-09 11:24[24-26]' operate.log
+
+154.209.77.126 服务器

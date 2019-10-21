@@ -1,0 +1,16 @@
+spring boot 记录
+	feign client 
+		1、参数需要注解，不论是单个还是多个，单个实体用questBody,单个基本数据类型用requestParam ,requestParam 需要加上value不论是多个还是一个，如果值允许为null，需要加上require=false
+			例如：
+		2、client接口返回值需要对象类型，如返回值为int 修改成Integer，（调用方没有接收可以用int）
+		3、List<Object>用requestBody注解
+		4、getMapping 不能接收实体
+		5、一个实体参数，调用方不能传null
+		
+java.util.LinkedHashMap cannot be cast 
+
+Date 类型的转化
+
+URL传json字符串的 encodeURIComponent 
+
+import org.apache.commons.beanutils.BeanUtils.copyProperties();元对象不能date类型不能为空，bigDe..不能为空

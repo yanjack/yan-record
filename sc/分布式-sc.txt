@@ -1,0 +1,96 @@
+springcloud
+	sc的基本原理
+		1、用户请求网关（zuul/gateway），网关通过Robbin（router转发、负载均衡）到某个服务。
+		2、订单服务启动往注册中心eureka注册器服务信息，定时发送心跳及从定时eureka拉取服务注册表，把注册表信息缓存在本服务缓存中。
+		3、当订单需要掉用积分服务时，feign生成一个动态代理类，Robbin从订单服务的缓存获取注册表，通过负载均衡策略选择积分服务的一台机器，封装成http请求消费访问积分服务
+	
+	sc与dubbo比较
+		1、sc全家桶的组件。网关、配置中心、hsytric等等
+		2、sc社区相对活跃，近两年中小型使用sc比较多
+		3、sc提供各组组件使用，成本相对低
+	
+	注册中心选型（eureka/zk）
+		eureka
+			基本原理
+				1、服务A启动时往eureka服务注册表注册服务。每隔30秒向注册中心发送心跳。
+				2、eureka中的服务注册表只负责服务注册及接收心跳，另有一个线程定时默认每隔60秒检查服务注册表，是否有机器没有renew发送心跳续约，默认90秒没有renew把此服务从注册表中移除
+				3、readwritcache，当有服务注册时注册表会往readwritcache同步服务信息。
+				4、readonlycache，线程定时检测 readonlycache与readwritcache的区别，定时更新。
+				5、服务拉取发现只从readonlycache拉取
+			
+			为什么eureka采用多级缓存策略
+				减少读取时添加各种锁。提高并发量。
+			
+			时效行较慢
+				默认的配置服务的发现比较慢
+			
+			生产eureka参数优化配置：
+				eureka.server.responseCacheUpdateIntervalMs = 3000 缓存更新
+				eureka.client.registryFetchIntervalSeconds = 30000 拉取服务
+				eureka.client.leaseRenewalIntervalInSeconds = 30 发送心跳
+				eureka.server.evictionIntervalTimerInMs = 60000  故障检测
+				eureka.instance.leaseExpirationDurationInSeconds = 90 多久未续约认为服务已故障
+			
+			高可用
+				CAP定理中采取了AP；CAP C-consistency 一致性；A-availability 可用性；P-partition tolerance 分区容错性
+				peer-to-peer，各个机器都是平等的，都可以注册、发现服务，服务之间同步数据。
+				每个服务中都有所有的注册表信息。假设其中有eureka故障，不会影响服务的注册与发现
+				假设服务A往eureka1注册，eureka1没有往其他eureka同步就宕机了，导致数据不一致。当服务A感应到eureka1挂了往其他服务注册，数据又会一致，所以eureka可以保证最终一致性
+				
+			 容量:
+				eureka，也很难支撑大规模的服务实例，因为每个eureka实例都要接受所有的请求，实例多了压力太大，扛不住，也很难到几千服务实例
+				
+		zk https://www.cnblogs.com/centos2017/p/8118963.html
+			 zk采用了CAP中CP典型
+			 保证数据的强一致性，服务A向ZK leader注册，leader向其它follower同步节点，当leader挂了或者大部分follower挂了会进入恢复阶段重新选举leader，此阶段是暂停服务的，但是数据是完全一样的。
+			 follower、leader都可以读。
+			 zk客户端可以监听节点，一旦节点发生变化，客户方会马上拉取最新的数据，所以zk的即时性很好
+			 
+			 容量
+				zk，不适合大规模的服务实例，因为服务上下线的时候，需要瞬间推送数据通知到所有的其他服务实例，所以一旦服务规模太大，到了几千个服务实例的时候，会导致网络带宽被大量占用
+	
+	
+	网关（zuul/gateway）
+		网关的作用：
+			1、路由转发请求；二次开发实现动态路由，新开发某个服务，动态把请求路径和服务的映射关系热加载到网关里去;服务增减机器，网关自动热感知
+				zuul-二次开发实现动态路由，把服务与请求路径存数据库，自定义一个 routeLocator继承routelocator 重写locateRoutes方法把路由表信息动态写入，并实现refreshableRouteLocator刷新路由表，
+				可以开发一个页面进行CURD。
+				gateway-实现RouteDefinitionRepository接口，getRouteDefinitions()把路由表信息动态写入,
+			2、灰度发布
+				新版本上线，控制少量流量去新版本，没问题后，再把其他服务升级。
+			3、授权认证
+			
+			4、性能监控：接口的耗时,QPS,成功率
+			
+			5、日志
+			
+			6、限流熔断
+	
+	生产部署配置 假设QPS 200
+		eureka：假如系统划分的微服务不多，只有几十个或者十几个，每个服务做冗余高可用，配置两台，服务实例不多，几十上百个实例，就算心跳设置成一秒一次，每秒并发量也就一百多，弄个4核8G的配置随便可以跑，为保证高可用，再冗余一台4核8G
+		zuul、gateway：所有请求都是由网关路由转发的，所以网关配置可以配高一点8核16G，一台可扛几千的并发量，200QPS完全不在话下。高可用冗余多配一台
+		其余微服务一般并发量最多就上百。4核8G完全够。高可用各两台
+		数据库
+		中间件、缓存
+	
+	服务间调用的超时、重试，核心接口的幂等性设计
+	
+	
+	分布式事务处理
+		TCC try confirm cancel方案
+		
+		最终一致性事务方案
+		
+	分布式锁
+	
+	高可用网关/注册中心/配置中心
+		
+		
+		
+		
+		
+		
+			 
+			
+
+		
