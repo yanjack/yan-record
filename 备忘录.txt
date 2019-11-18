@@ -1,0 +1,89 @@
+spring
+	spring bean IOC
+		beanfactory容器
+		XML解析
+			resource 
+			beandefinitionreader 解析XML到beandefinition
+		bean定义 如果有父类把父类的属性加上
+			rootbeandefinition
+			childbeandefinition
+		根据不同的策略（工厂方法、构造函数、默认构造等）创建bean包装
+			反射或者CGLIB动态代理（有方法增强 replaced-method、lookup-method）
+		单例缓存beanfactory，用户解决循环依赖		
+			循环依赖解决
+				构造函数依赖 抛出异常				
+				single setter依赖
+					是否允许循环依赖
+					singleObjects
+					earlySingletonObjects	提前暴露未完全创建的bean
+					singletonFactories		提前暴露beanFactory，未进行属性填冲		
+		属性填充
+			
+		POSTprocess bean增强
+		生命周期
+			实例化createBeanInstance（）
+				
+			属性填充populateBean（）
+				
+			初始化initializeBean（）
+				
+			销毁
+				
+	AOP
+	事务
+	springdata
+	springboot
+并发
+	QAS
+	CAS
+	syn
+	lock
+	threadlocal
+	threadcool
+JVM
+	内存模型
+	GC
+	垃圾收集器
+在虚拟机上搭建springcloud
+	gateway
+	eureka
+	服务
+	config
+	redis
+	rabbit
+分布式
+中间件
+MySQL
+	分表分库
+	
+待补充
+	日志 1
+	token 
+		登录
+			获取用户信息存redis
+	权限
+	redis
+	rabbitMQ
+	web前端框架 layerUI
+	config配置中心
+	定时任务
+	分布式事务？
+	异常处理
+	
+	
+	分页插件
+		mybatis-paginator 
+		PageHelper 1
+	打印SQL日志
+		mybatis:
+# spring boot集成mybatis的方式打印sql
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+	中间件
+	
+问题
+	数据库时间不一致
+	serverTimezone=Asia/Shanghai
+	
+	url: jdbc:mysql://127.0.0.1:3306/user?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+	

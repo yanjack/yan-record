@@ -1,0 +1,100 @@
+springboot事件机制
+	事件源
+		springapplication  事件启动
+	事件 
+		applicationEvent 继承自JDK EventObject  	
+		ApplicationEvent：事件，SimpleApplicationEventMulticaster会根据事件类型过滤事件的监听器列表
+	事件监听器
+		spring.factories下org.springframework.context.ApplicationListener  类似观察这对象 observe
+		ApplicationListener：事件监听器，实现此接口，onApplicationEvent就是当事件启动时需要进行的业务，交由EventPublishingRunListener管理
+	事件环境发布
+		ApplicationEventMulticaster 类似 subject抽象主题
+		org.springframework.boot.context.event.EventPublishingRunListener  类似subject实现 持有ApplicationListener集合对象
+		SpringApplicationRunListener，EventPublishingRunListener：监听事件集中管理，持有SimpleApplicationEventMulticaster事件广播器对象，
+		此对象管理一个ApplicationListener列表，根据ApplicationEvent对监听列表进行过滤后广播
+		
+springboot启动流程
+	一、springApplication initialization 初始化
+		1、设置应用类型
+			this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		2、加载 spring.factories配置的 应用上下文初始化器并实例化
+			this.setInitializers(this.getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		3、加载 spring.factories配置的监听并实例化
+			this.setListeners(this.getSpringFactoriesInstances(ApplicationListener.class));
+		4、设置应用启动主方法
+			this.mainApplicationClass = this.deduceMainApplicationClass();
+			
+	二、上下文应用（ConfigurableApplicationContext）启动前：准备阶段
+		1、设置系统java.awt.headless模式，
+			this.configureHeadlessProperty();
+		2、加载spring.factories配置的run监听EventPublishingRunListener 并实例化，
+		遍历springapplication初始化阶段listeners，存放至SimpleApplicationEventMulticaster.ListenerRetriever.applicationListeners 开启监听
+			SpringApplicationRunListeners listeners = this.getRunListeners(args);
+			listeners.starting();//哪些事件监听器有start事件 分别做了什么事情
+				LoggingApplicationListener
+				DelegatingApplicationListener
+		3、准备环境（），加载各种配置属性环境ConfigurableEnvironment，加载顺序？发布environmentPrepare事件监听。
+			ConfigurableEnvironment environment = this.prepareEnvironment(listeners, applicationArguments);
+			1、根据应用类型创建不同的 ConfigurableEnvironment 对象 				
+				创建中会加载 systemEnvironment systemProperties 系统环境属性
+				以servlet类型的web应用为例
+				servletConfigInitParams    servlet配置初始化参数
+				servletContextInitParams   servlet上下文初始化参数
+				jndiProperties 		Jndi 属性源
+				systemProperties 	java参数属性源
+				systemEnvironment 	环境变量属性源
+				加载顺序
+			2、配置环境 configureEnvironment
+				配置属性源 configurePropertySources
+					如果有命令行配置放在第一位置 commandLineArgs
+				配置配置文件
+					environment.getActiveProfiles()
+					加载spring.profiles.active
+			3、postProcessEnvironment事件监听 //哪些事件监听器有postProcessEnvironment事件 分别做了什么事情？
+				ConfigFileApplicationListener 加载配置文件 application.yml(.yaml/.xml/.properties)
+					random加载systemEnvironment后面
+						 environment.getPropertySources().addAfter("systemEnvironment", new RandomValuePropertySource("random"));
+					spring.profiles.include
+					spring.profiles.active
+			4、把environment绑定到springApplication 
+				this.bindToSpringApplication((ConfigurableEnvironment)environment);
+			5、加载configurationProperties资源放第一位，value为上述加载PropertySources集合		
+				 ConfigurationPropertySources.attach((Environment)environment);
+		4、创建上下文
+			context = this.createApplicationContext();
+		5、上下文启动准备工作
+			beanFactory
+	三、上下文（ConfigurableApplicationContext）启动
+		this.refreshContext(context);
+	四、启动后 
+		this.afterRefresh(context, applicationArguments);
+
+	
+	spring bean的加载
+		
+	expand扩展
+		CopyOnWriteArrayList 
+		CountDownLatch
+		
+		PropertySources 与AbstractEnvironment
+	
+	IOC
+	springboot启动
+		https://blog.csdn.net/woshilijiuyi/article/details/82219585
+			AbstractApplicationContext.refresh()
+
+	FileSystemXmlApplicationContext
+		https://www.jianshu.com/p/e4ca039a2272
+		核心方法
+			AbstractApplicationContext.refresh()
+				构建BeanFactory，以便于产生所需的 Bean
+					AbstractRefreshableApplicationContext.refreshBeanFactory
+						AbstractXmlApplicationContext.loadBeanDefinitions 加载IOC中bean的数据结构
+							AbstractBeanDefinitionReader．loadBeanDefinitions
+								XmlBeanDefinitionReader．loadBeanDefinitions
+									DefaultBeanDefinitionDocumentReader．registerBeanDefinitions　注册bean
+										processBeanDefinition
+	E:\yl\ide\spring\spring-framework
+	E:\yl\ide\yl-demo
+	
+		
