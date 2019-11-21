@@ -1,0 +1,70 @@
+一、java基础
+	多态、封装、继承、面向对象 思想
+	容器
+		数据结构、优缺点、实现方式		
+	多线程、并发
+		线程池
+			线程池参数、设计合理的线程池、实现原理、阻塞队列、forkjoin线程池
+		并发包concurrent（复习，加深印象）
+			syner,
+				锁的加重，偏向锁、轻量锁
+				moniter字节码
+			ReentrantLock实现原理
+				AQS（AbstractQueuedSynchronizer）原理
+			CAS(case and swape)
+				ABA问题及解决
+			volatile 关键字
+				可见性
+			Atomic类
+				原子性
+			Condition
+			CopyOnWriteArrayList
+				ReentrantLock加锁，复制数组
+			CountDownLatch
+				调度线程运行
+			ConcurrentHashMap			
+	IO、NIO
+		装饰器设计模式		
+	反射、泛型
+		代理模式
+	网络编程socket
+二、微服务springcould
+	注册中心eureka
+		实现原理，注册表读写并发处理（缓存），心跳机制，高可用
+	远程调用服务feign（扫盲，了解）
+		集成Robbon路由，负载均衡算法，协议，代理生成请求
+	网关gateway
+		路由转发请求、全局filter做白名单、token校验、日志记录等、动态路由、灰度发布
+	配置中心config
+		配置统一管理、高可用、动态刷新配置
+	熔断hystrix（扫盲，了解）
+		超时、服务降级、重试、服务隔离
+三、分布式技术
+	消息中间件YL-MQ
+	zookeeper（-实操）
+		协调服务
+	redis 
+		内存淘汰策略、机制，单线程IO线程模型、集群、哨兵、持久化策略
+	ES（-集成进项目）
+四、MySQL
+	索引（B+树）
+		聚集索引和非聚集索引的区别及如何根据索引查找数据
+	SQL优化
+		文章加实践
+	分表分库（-找时间实践）
+		range
+		hash取模
+五、JVM（-复习）
+	内存模型
+	GC回收算法
+		root可达行分析
+	各垃圾回收器使用的算法及优缺点
+六、设计模式及各类各种设计方案输出
+七、问题解决、生产故障（-总结）
+	
+		
+		
+		
+	
+		
+	
