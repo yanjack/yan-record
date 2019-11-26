@@ -22,7 +22,9 @@
 				ReentrantLock加锁，复制数组
 			CountDownLatch
 				调度线程运行
-			ConcurrentHashMap			
+			ConcurrentHashMap	
+			Semaphore
+				信号量
 	IO、NIO
 		装饰器设计模式		
 	反射、泛型

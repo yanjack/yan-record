@@ -1,0 +1,62 @@
+JVM
+	JVM运行
+		1、.java文件编译器编译成.class文件
+		2、类加载
+			加载
+				把.class文件加载至内存
+			连接
+				验证
+				准备阶段 给类内存分配、static静态常量会在此阶段分配内存并初始化
+				解析
+			初始化
+			双亲委派机制:先从下往上加载，如没有这个类，再从上往下
+				bootstrap
+				ext 
+				APP
+	JVM内存分配
+		方法区
+			存放.class类信息元数据
+		程序计数器
+			线程独有，记录线程执行指令
+		Java虚拟机栈
+			线程独有，存放方法的局部变量表（引用变量指向Java堆中对象地址）、方法入栈出栈等
+		Java堆
+			共享，存放Java对象数据
+		本地方法栈
+			native方法，存放内存
+			
+	JVM参数配置	java -Xms512M -Xmx512M -Xmn256M -Xss1M -XX:PermSize=128M -XX:MaxPermSize=128M -jar App.jar
+		-Xms :java堆内存的大小
+		-Xmx :Java堆内存的最大大小
+		-Xmn :Java堆内存新生代的大小
+		-XX:PermSize :永久代大小
+		-XX:MaxPermSize ：永久代的最大大小
+		-Xss ：每个线程的栈内存大小
+		-XX:SurvivorRatio 
+		-XX:MaxTenuringThreshold 默认15
+	GC垃圾回收
+		对象流向
+			动态对象年龄判断 -XX:TargetSurvivorRatio 目标存活率，默认为50%
+				当前放对象的Survivor区域里，一批对象的总大小大于了这块Survivor区域的内存大小的50%，那么此时大于等于这批对象年龄的对象，就可以直接进入老年代了。
+			大对象直接进入老年代 -XX:PretenureSizeThreshold
+			对象什么时候走向老年代 -XX:MaxTenuringThreshold
+				没躲过一次minorGC +1,大于MaxTenuringThreshold就会进入老年代
+			GC回收流程，见流程图
+				MinorGC会在Eden去将要满时触发，MinorGC前会先判断老年代的可用内存是否大于新生代所有对象的大小，
+					如果大于，放心进行MinorGC，就算所有对象都存活都会在老年代中存贮下来，不存在OOM
+					如果小于新生代所有对象的大小，就会判断是否有设置老年代担保参数
+						有设置，判断老年代可用内存大小是否大于之前MinorGC后进入老年代对象的平均大小
+							大于就执行MinorGC
+							小于执行FullGC后再执行MinorGC
+						没有设置执行FullGC
+				MinorGC一次后三种情况
+					1、minorGC后存活的对象可以直接存放在survivor区
+					2、minorGC后存活的对象survivor区放不下，但是可以在老年代的可用内存放下，就存放至老年代
+					3、老年代可用内存放不下，进行一次FullGC回收老年代，还是放不下OOM
+		stop the Word
+			GC线程回收时，工作线程停止
+		GC回收器
+			serial回收器
+				标记复制算法，单线程回收，回收新生代对象
+			ParNew
+				标记复制，多线程回收（默认线程数为CPU的个数），新生代
